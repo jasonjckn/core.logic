@@ -1455,11 +1455,11 @@
 
 (def f-sym (partial sym-helper "f"))
 (def a-sym (partial sym-helper "a"))
-
+(class (.name *ns*))
 (defn- ->sym [& args]
   (symbol (apply str args)))
 
-(defn- defrel-helper [name arity args]
+(defn- defrel-helper [ns name arity args]
   (let [r (range 1 (+ arity 2))
         arity-excs (fn [n] `(arity-exc-helper '~name ~n))]
     (if (seq args)
@@ -1467,12 +1467,12 @@
          (def ~name
            (.withMeta
             (~'clojure.core.logic.Rel. '~name (atom {}) nil ~@(map arity-excs r))
-            {:ns ~'*ns*}))
+            {:ns (find-ns (quote ~(.name ns)))}))
          (extend-rel ~name ~@args))
       `(def ~name
          (.withMeta
           (~'clojure.core.logic.Rel. '~name (atom {}) nil ~@(map arity-excs r))
-          {:ns ~'*ns*})))))
+          {:ns (find-ns (quote ~(.name ns)))})))))
 
 (defmacro def-apply-to-helper [n]
   (let [r (range 1 (clojure.core/inc n))
@@ -1532,8 +1532,8 @@
        (defmacro ~'defrel 
          "Define a relation for adding facts. Takes a name and some fields.
          Use fact/facts to add facts and invoke the relation to query it."
-         [~'name ~'& ~'rest]
-         (defrel-helper ~'name ~arity ~'rest)))))
+         [~'name ~'& ~'rest]         
+         (defrel-helper ~'*ns* ~'name ~arity ~'rest)))))
 
 (RelHelper 20)
 
