@@ -1455,7 +1455,6 @@
 
 (def f-sym (partial sym-helper "f"))
 (def a-sym (partial sym-helper "a"))
-(class (.name *ns*))
 (defn- ->sym [& args]
   (symbol (apply str args)))
 
