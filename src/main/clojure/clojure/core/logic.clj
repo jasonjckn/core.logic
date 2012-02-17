@@ -1455,6 +1455,7 @@
 
 (def f-sym (partial sym-helper "f"))
 (def a-sym (partial sym-helper "a"))
+
 (defn- ->sym [& args]
   (symbol (apply str args)))
 
@@ -1582,7 +1583,9 @@
 (defn facts
   "Define a series of facts. Takes a vector of vectors where each vector
    represents a fact tuple, all with the same number of elements."
-  ([rel [f :as tuples]] (facts rel (count f) tuples))
+  ([rel [f :as tuples]]
+     (if (seq tuples)
+       (facts rel (count f) tuples)))
   ([^Rel rel arity tuples]
      (let [rel-ns (:ns (meta rel))
            rel-set (var-get (ns-resolve rel-ns (set-sym (.name rel) arity)))
